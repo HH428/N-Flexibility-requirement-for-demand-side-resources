@@ -24,10 +24,6 @@ end
 
 % Ramping 5min
 rampPV5 = abs(powerPV5(2:end) - powerPV5(1:end-1))/5; % per min
-[countsPV5,centersPV5] = hist(rampPV5,barDensity);
-ratesPV5 = countsPV5/(nIntv-1);
-tempIdx = find(cumsum(ratesPV5)>0.95,1);
-PV5Ramping = centersPV5(tempIdx)/max(powerPV5)
 
 % Ramping 15min
 nIntv15 = nIntv/3;
@@ -37,10 +33,6 @@ for i = 1:nIntv15
     powerPV15(i) = mean(powerPV5(tempIdx));
 end
 rampPV15 = abs(powerPV15(2:end) - powerPV15(1:end-1))/15; % per min
-[countsPV15,centersPV15] = hist(rampPV15,barDensity);
-ratesPV15 = countsPV15/(nIntv15-1);
-tempIdx = find(cumsum(ratesPV15)>0.95,1);
-PV15Ramping = centersPV15(tempIdx)/max(powerPV15)
 
 % Ramping 60min
 nIntv60 = nIntv/12;
@@ -50,47 +42,68 @@ for i = 1:nIntv60
     powerPV60(i) = mean(powerPV5(tempIdx));
 end
 rampPV60 = abs(powerPV60(2:end) - powerPV60(1:end-1))/60; % per min
-[countsPV60,centersPV60] = hist(rampPV60,barDensity);
+
+
+rampMax = max([max(rampPV5) max(rampPV15) max(rampPV60)]);
+xbin = linspace(0,rampMax,barDensity); % get the same bin for 5min, 15min, and 60min
+
+[countsPV5,centersPV5] = hist(rampPV5,xbin);
+ratesPV5 = countsPV5/(nIntv-1);
+tempIdx = find(cumsum(ratesPV5)>0.95,1);
+PV5Ramping = centersPV5(tempIdx)/max(powerPV5)
+
+
+[countsPV15,centersPV15] = hist(rampPV15,xbin);
+ratesPV15 = countsPV15/(nIntv15-1);
+tempIdx = find(cumsum(ratesPV15)>0.95,1);
+PV15Ramping = centersPV15(tempIdx)/max(powerPV15)
+
+
+[countsPV60,centersPV60] = hist(rampPV60,xbin);
 ratesPV60 = countsPV60/(nIntv60-1);
 tempIdx = find(cumsum(ratesPV60)>0.95,1);
 PV60Ramping = centersPV60(tempIdx)/max(powerPV60)
 
 
+x = linspace(0,100,barDensity);
 figure(1) %'5min PV ramping'
 title('5min PV Ramping')
 yyaxis left
-bar(1:barDensity,ratesPV5);
+bar(x,ratesPV5);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Capacity Ratio (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesPV5));
+plot(x,cumsum(ratesPV5));
 ylim([0 1])
 ylabel('Cumulative Probability')
 
 figure(2) % '15min PV ramping',
 title('15min PV Ramping')
 yyaxis left
-bar(1:barDensity,ratesPV15);
+bar(x,ratesPV15);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Capacity Ratio (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesPV15));
+plot(x,cumsum(ratesPV15));
 ylim([0 1])
 ylabel('Cumulative Probability')
 
 figure(3) %'60min PV ramping',
 title('60min PV Ramping')
 yyaxis left
-bar(1:barDensity,ratesPV60);
+bar(x,ratesPV60);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Capacity Ratio (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesPV60));
+plot(x,cumsum(ratesPV60));
 ylim([0 1])
 ylabel('Cumulative Probability')

@@ -29,14 +29,9 @@ for i = 1:(nIntv10 - 1) % the convert 10min to 5 min using interpolation
 end
 powerWT5(end) = powerWT10(end);
 
-% Ramping 5min
+% Ramping 5min, 15min, 60min
 rampWT5 = abs(powerWT5(2:end) - powerWT5(1:end-1))/5; % per min
-[countsWT5,centersWT5] = hist(rampWT5,barDensity);
-ratesWT5 = countsWT5/(nIntv-1);
-tempIdx = find(cumsum(ratesWT5)>0.95,1);
-WT5Ramping = centersWT5(tempIdx)/max(powerWT5)
 
-% Ramping 15min
 nIntv15 = nIntv/3;
 powerWT15 = zeros(nIntv15,1);
 for i = 1:nIntv15
@@ -44,13 +39,7 @@ for i = 1:nIntv15
     powerWT15(i) = mean(powerWT5(tempIdx));
 end
 rampWT15 = abs(powerWT15(2:end) - powerWT15(1:end-1))/15; % per min
-[countsWT15,centersWT15] = hist(rampWT15,barDensity);
-ratesWT15 = countsWT15/(nIntv15-1);
-tempIdx = find(cumsum(ratesWT15)>0.95,1);
-WT15Ramping = centersWT15(tempIdx)/max(powerWT15)
 
-
-% Ramping 60min
 nIntv60 = nIntv/12;
 powerWT60 = zeros(nIntv60,1);
 for i = 1:nIntv60
@@ -58,50 +47,67 @@ for i = 1:nIntv60
     powerWT60(i) = mean(powerWT5(tempIdx));
 end
 rampWT60 = abs(powerWT60(2:end) - powerWT60(1:end-1))/60; % per min
-[countsWT60,centersWT60] = hist(rampWT60,barDensity);
+
+rampMax = max([max(rampWT5) max(rampWT15) max(rampWT60)]);
+xbin = linspace(0,rampMax,barDensity); % get the same bin for 5min, 15min, and 60min
+
+%Ramping 5min
+[countsWT5,centersWT5] = hist(rampWT5,xbin);
+ratesWT5 = countsWT5/(nIntv-1);
+tempIdx = find(cumsum(ratesWT5)>0.95,1);
+WT5Ramping = centersWT5(tempIdx)/max(powerWT5)
+
+% Ramping 15min
+[countsWT15,centersWT15] = hist(rampWT15,xbin);
+ratesWT15 = countsWT15/(nIntv15-1);
+tempIdx = find(cumsum(ratesWT15)>0.95,1);
+WT15Ramping = centersWT15(tempIdx)/max(powerWT15)
+
+% Ramping 60min
+[countsWT60,centersWT60] = hist(rampWT60,xbin);
 ratesWT60 = countsWT60/(nIntv60-1);
 tempIdx = find(cumsum(ratesWT60)>0.95,1);
 WT60Ramping = centersWT60(tempIdx)/max(powerWT60)
 
-
-
+x = linspace(0,100,barDensity);
 figure(1) %'5min WT ramping'
 title('5min Wind Ramping')
 yyaxis left
-bar(1:barDensity,ratesWT5);
+bar(x,ratesWT5);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Capacity Ratio (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesWT5));
+plot(x,cumsum(ratesWT5));
 ylabel('Cumulative Probability')
 ylim([0 1])
 
 figure(2) % '15min WT ramping',
 title('15min Wind Ramping')
 yyaxis left
-bar(1:barDensity,ratesWT15);
+bar(x,ratesWT15);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Capacity Ratio (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesWT15));
+plot(x,cumsum(ratesWT15));
 ylim([0 1])
 ylabel('Cumulative Probability')
 
 figure(3) %'60min WT ramping',
 title('60min Wind Ramping')
 yyaxis left
-bar(1:barDensity,ratesWT60);
-
-
+bar(x,ratesWT60);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Capacity Ratio (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesWT60));
+plot(x,cumsum(ratesWT60));
 ylim([0 1])
 ylabel('Cumulative Probability')

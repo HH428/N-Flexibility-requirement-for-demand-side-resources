@@ -72,10 +72,6 @@ powerNetDemand5 = powerDemand5 - powerPV5 - powerWT5;
 
 % Ramping 5min
 rampNetDemand5 = abs(powerNetDemand5(2:end) - powerNetDemand5(1:end-1))/5; % per min
-[countsNetDemand5,centersNetDemand5] = hist(rampNetDemand5,barDensity);
-ratesNetDemand5 = countsNetDemand5/(nIntv-1);
-tempIdx = find(cumsum(ratesNetDemand5)>0.95,1);
-NetDemand5Ramping = centersNetDemand5(tempIdx)/max(powerNetDemand5)
 
 % Ramping 15min
 nIntv15 = nIntv/3;
@@ -85,10 +81,7 @@ for i = 1:nIntv15
     powerNetDemand15(i) = mean(powerNetDemand5(tempIdx));
 end
 rampNetDemand15 = abs(powerNetDemand15(2:end) - powerNetDemand15(1:end-1))/15; % per min
-[countsNetDemand15,centersNetDemand15] = hist(rampNetDemand15,barDensity);
-ratesNetDemand15 = countsNetDemand15/(nIntv15-1);
-tempIdx = find(cumsum(ratesNetDemand15)>0.95,1);
-NetDemand15Ramping = centersNetDemand15(tempIdx)/max(powerNetDemand15)
+
 
 % Ramping 60min
 nIntv60 = nIntv/12;
@@ -98,47 +91,64 @@ for i = 1:nIntv60
     powerNetDemand60(i) = mean(powerNetDemand5(tempIdx));
 end
 rampNetDemand60 = abs(powerNetDemand60(2:end) - powerNetDemand60(1:end-1))/60; % per min
-[countsNetDemand60,centersNetDemand60] = hist(rampNetDemand60,barDensity);
+
+rampMax = max([max(rampNetDemand5) max(rampNetDemand15) max(rampNetDemand60)]);
+xbin = linspace(0,rampMax,barDensity); % get the same bin for 5min, 15min, and 60min
+
+[countsNetDemand5,centersNetDemand5] = hist(rampNetDemand5,xbin);
+ratesNetDemand5 = countsNetDemand5/(nIntv-1);
+tempIdx = find(cumsum(ratesNetDemand5)>0.95,1);
+NetDemand5Ramping = centersNetDemand5(tempIdx)/max(powerNetDemand5)
+
+[countsNetDemand15,centersNetDemand15] = hist(rampNetDemand15,xbin);
+ratesNetDemand15 = countsNetDemand15/(nIntv15-1);
+tempIdx = find(cumsum(ratesNetDemand15)>0.95,1);
+NetDemand15Ramping = centersNetDemand15(tempIdx)/max(powerNetDemand15)
+
+[countsNetDemand60,centersNetDemand60] = hist(rampNetDemand60,xbin);
 ratesNetDemand60 = countsNetDemand60/(nIntv60-1);
 tempIdx = find(cumsum(ratesNetDemand60)>0.95,1);
 NetDemand60Ramping = centersNetDemand60(tempIdx)/max(powerNetDemand60)
 
-
+x = linspace(0,100,barDensity);
 figure(1) %'5min NetDemand ramping'
 title('5min NetDemand Ramping')
 yyaxis left
-bar(1:barDensity,ratesNetDemand5);
+bar(x,ratesNetDemand5);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Peak (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesNetDemand5));
+plot(x,cumsum(ratesNetDemand5));
 ylim([0 1])
 ylabel('Cumulative Probability')
 
 figure(2) % '15min NetDemand ramping',
 title('15min NetDemand Ramping')
 yyaxis left
-bar(1:barDensity,ratesNetDemand15);
+bar(x,ratesNetDemand15);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Peak (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesNetDemand15));
+plot(x,cumsum(ratesNetDemand15));
 ylim([0 1])
 ylabel('Cumulative Probability')
 
 figure(3) %'60min NetDemand ramping',
 title('60min NetDemand Ramping')
 yyaxis left
-bar(1:barDensity,ratesNetDemand60);
+bar(x,ratesNetDemand60);
+xlim([0 100])
 ylim([0 1])
+xlabel('Ramping/Peak (%)')
 ylabel('Probability Density (Logarithmic scale)')
-set(gca,'YScale','log');
-
+set(gca,'YScale','log','FontSize',16);
 yyaxis right
-plot(1:barDensity,cumsum(ratesNetDemand60));
+plot(x,cumsum(ratesNetDemand60));
 ylim([0 1])
 ylabel('Cumulative Probability')
