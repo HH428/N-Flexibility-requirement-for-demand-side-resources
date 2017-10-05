@@ -31,8 +31,8 @@ powerWT5(end) = powerWT10(end);
 
 % Ramping 5min
 rampWT5 = abs(powerWT5(2:end) - powerWT5(1:end-1))/5; % per min
-counts5 = hist(rampWT5,barDensity);
-rates5 = counts5/(nIntv-1);
+countsWT5 = hist(rampWT5,barDensity);
+ratesWT5 = countsWT5/(nIntv-1);
 
 % Ramping 15min
 nIntv15 = nIntv/3;
@@ -42,8 +42,8 @@ for i = 1:nIntv15
     powerWT15(i) = mean(powerWT5(tempIdx));
 end
 rampWT15 = abs(powerWT15(2:end) - powerWT15(1:end-1))/15; % per min
-counts15 = hist(rampWT15,barDensity);
-rates15 = counts15/(nIntv15-1);
+countsWT15 = hist(rampWT15,barDensity);
+ratesWT15 = countsWT15/(nIntv15-1);
 
 % Ramping 60min
 nIntv60 = nIntv/12;
@@ -53,10 +53,28 @@ for i = 1:nIntv60
     powerWT60(i) = mean(powerWT5(tempIdx));
 end
 rampWT60 = abs(powerWT60(2:end) - powerWT60(1:end-1))/60; % per min
-counts60 = hist(rampWT60,barDensity);
-rates60 = counts60/(nIntv60-1);
+countsWT60 = hist(rampWT60,barDensity);
+ratesWT60 = countsWT60/(nIntv60-1);
 
+figure(1) %'5min WT ramping'
+yyaxis left
+bar(1:barDensity,ratesWT5);
+yyaxis right
+plot(1:barDensity,cumsum(ratesWT5));
+ylim([0 1])
 
+figure(2) % '15min WT ramping',
+yyaxis left
+bar(1:barDensity,ratesWT15);
+yyaxis right
+plot(1:barDensity,cumsum(ratesWT15));
+ylim([0 1])
 
+figure(3) %'60min WT ramping',
+yyaxis left
+bar(1:barDensity,ratesWT60);
+yyaxis right
+plot(1:barDensity,cumsum(ratesWT60));
+ylim([0 1])
 
 
