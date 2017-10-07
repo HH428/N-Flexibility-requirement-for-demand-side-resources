@@ -14,7 +14,7 @@ for i = 1:nFiles % read file names
     names(i,1) = cellstr(listing(i).name);
 end
 nameLength = cellfun(@length, names);
-names(nameLength < 5) = []; % record file names
+names(nameLength < 5) = []; %delete the irrelated file names
 nNames = length(names);
 
 for i = 1:nNames % the data is clean and strictly stick with 10 min interval
