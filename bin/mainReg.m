@@ -105,7 +105,7 @@ mdl60.Coefficients
 
 figure(4)
 %subplot(1,3,1)
-s11 = surf(0:5:50,0:5:50,reshape((NetDemand60Ramping' - 0.0501*maxDemand)/powerMax * 100,[11,11]))
+s11 = surf(0:5:50,0:5:50,reshape((NetDemand60Ramping' - 0.0501*maxDemand)/powerMax * 100,[11,11]));
 hold on
 % surf(0:5:50,0:5:50,reshape(mdl60.Fitted,[11,11]))
 % Calculate the upper bond
@@ -126,7 +126,7 @@ zlim([0 10])
 
 figure(5)
 %subplot(1,3,2)
-s21 = surf(0:5:50,0:5:50,reshape((NetDemand15Ramping' - 0.013*maxDemand)/powerMax * 100,[11,11]))
+s21 = surf(0:5:50,0:5:50,reshape((NetDemand15Ramping' - 0.013*maxDemand)/powerMax * 100,[11,11]));
 hold on
 % Calculate the upper bond
 f = [sum(X(1,:)) sum(X(2,:)) length(X(1,:))];
@@ -134,7 +134,7 @@ A = -[X(1,:)' X(2,:)' ones(length(X(1,:)),1)];
 b = - (NetDemand15Ramping - 0.013*maxDemand);
 x = linprog(f,A,b)
 zPre = (x(1)*X(1,:)' + x(2)*X(2,:)')/powerMax * 100;
-s22 = surf(0:5:50,0:5:50,reshape(zPre,[11,11]), 'FaceColor','red','FaceAlpha', 0.5,'EdgeAlpha', 0)
+s22 = surf(0:5:50,0:5:50,reshape(zPre,[11,11]), 'FaceColor','red','FaceAlpha', 0.5,'EdgeAlpha', 0);
 xlabel({'PV penetration (%)'})
 ylabel({'Wind penetration (%)'})
 zlabel({'15min Netdemand Ramping/ Peak Demand (%)'})
@@ -146,7 +146,7 @@ zlim([0 10])
 
 figure(6)
 %subplot(1,3,3)
-s31 = surf(0:5:50,0:5:50,reshape((NetDemand5Ramping' - 0.006*maxDemand)/powerMax * 100,[11,11]))
+s31 = surf(0:5:50,0:5:50,reshape((NetDemand5Ramping' - 0.006*maxDemand)/powerMax * 100,[11,11]));
 hold on
 % Calculate the upper bond
 f = [sum(X(1,:)) sum(X(2,:)) length(X(1,:))];
@@ -154,7 +154,7 @@ A = -[X(1,:)' X(2,:)' ones(length(X(1,:)),1)];
 b = - (NetDemand5Ramping - 0.006*maxDemand);
 x = linprog(f,A,b)
 zPre = (x(1)*X(1,:)' + x(2)*X(2,:)')/powerMax * 100;
-s32 = surf(0:5:50,0:5:50,reshape(zPre,[11,11]), 'FaceColor','red','FaceAlpha', 0.5,'EdgeAlpha', 0)
+s32 = surf(0:5:50,0:5:50,reshape(zPre,[11,11]), 'FaceColor','red','FaceAlpha', 0.5,'EdgeAlpha', 0);
 xlabel({'PV penetration (%)'})
 ylabel({'Wind penetration (%)'})
 zlabel({'5min Netdemand Ramping/ Peak Demand (%)'})
