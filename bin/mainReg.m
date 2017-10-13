@@ -57,8 +57,6 @@ mypath = '../data/allDemandNYC2015.mat';
 load(mypath)
 powerDemand5 = allDemand.load;
 
-
-
 % 30000: 9900: 6200 = Load: Solar: Wind
 maxDemand = max(powerDemand5);
 maxWT = max(powerWT5);
@@ -74,13 +72,13 @@ nIntv60 = nIntv/12;
 powerNetDemand60 = zeros(nIntv60,1);
 
 
-maxPercentage = 25;
-caseNum = (maxPercentage-5)^2;
+maxPercentage = 11;
+caseNum = maxPercentage^2;
 powerPV5all = [];
 powerWT5all = [];
 
-for WTpercent = 6:maxPercentage
-    for PVpercent = 6:maxPercentage
+for WTpercent = 0:5:50 %11:maxPercentage + 10
+    for PVpercent = 0:5:50 %11:maxPercentage + 10
         scaleWT = maxDemand*WTpercent/100/maxWT;
         scalePV = maxDemand*PVpercent/100/maxPV;
         powerPV5temp = powerPV5 * scalePV;
@@ -126,16 +124,54 @@ for WTpercent = 6:maxPercentage
     end
 end
 
-X = zeros(3,caseNum);
-X(1,:) = 1; X(1,:) = X(1,:) * maxDemand;
-X(2,:) = powerPV5all; X(2,:) = X(2,:) * maxPV;
-X(3,:) = powerWT5all; X(3,:) = X(3,:) * maxWT;
-mdl = fitlm(X',NetDemand15Ramping'); % change 5,15,60 for different ramping time
-plot(NetDemand15Ramping,'r')  % change 5,15,60 for different ramping time
+% X = zeros(3,caseNum);
+% X(1,:) = 1; X(1,:) = X(1,:) * maxDemand;
+% X(2,:) = powerPV5all; X(2,:) = X(2,:) * maxPV;
+% X(3,:) = powerWT5all; X(3,:) = X(3,:) * maxWT;
+
+X = zeros(2,caseNum);
+%X(1,:) = 1; X(1,:) = X(1,:) * maxDemand;
+X(1,:) = powerPV5all; X(1,:) = X(1,:) * maxPV;
+X(2,:) = powerWT5all; X(2,:) = X(2,:) * maxWT;
+
+
+mdl5 = fitlm(X',NetDemand5Ramping' - 0.006*maxDemand); % change 5,15,60 for different ramping time
+figure(1)
+plot(NetDemand5Ramping - 0.006*maxDemand,'r')  % change 5,15,60 for different ramping time
 hold on
 %ypred = predict(mdl,X');
-plot(mdl.Fitted,'b')
+plot(mdl5.Fitted,'b')
 
+mdl15 = fitlm(X',NetDemand15Ramping' - 0.013*maxDemand); % change 5,15,60 for different ramping time
+figure(2)
+plot(NetDemand15Ramping - 0.013*maxDemand,'r')  % change 5,15,60 for different ramping time
+hold on
+%ypred = predict(mdl,X');
+plot(mdl15.Fitted,'b')
+
+mdl60 = fitlm(X',NetDemand60Ramping' - 0.0501*maxDemand); % change 5,15,60 for different ramping time
+figure(3)
+plot(NetDemand60Ramping - 0.0501*maxDemand,'r')  % change 5,15,60 for different ramping time
+hold on
+%ypred = predict(mdl,X');
+plot(mdl60.Fitted,'b')
+
+mdl5.Coefficients
+mdl15.Coefficients
+mdl60.Coefficients
+
+figure(4)
+surf(0:5:50,0:5:50,reshape(NetDemand60Ramping' - 0.0501*maxDemand,[11,11]))
+hold on
+syms x y z
+temp = reshape(NetDemand60Ramping' - 0.0501*maxDemand,[11,11])
+p1 = [50,0,temp(1,11)];
+p2 = [0,50,temp(11,1)];
+p3 = [50,50,temp(11,11)];
+q = [ones(4,1),[[x y z];p1;p2;p3]]; 
+d = det(q);
+Z = solve(d,z);
+fmesh(Z)
 
 
 
